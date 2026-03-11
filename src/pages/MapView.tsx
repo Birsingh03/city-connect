@@ -5,6 +5,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 // Fix default marker icons
+// @ts-ignore
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
@@ -12,7 +13,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
 });
 
-const statusColors = {
+const statusColors: Record<string, string> = {
   Pending: "#f59e0b",
   "Under Review": "#3b82f6",
   "In Progress": "#8b5cf6",
@@ -21,12 +22,12 @@ const statusColors = {
 
 export default function MapView() {
   const { complaints } = useComplaints();
-  const mapRef = useRef(null);
-  const mapInstanceRef = useRef(null);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<L.Map | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (mapInstanceRef.current) return;
+    if (mapInstanceRef.current || !mapRef.current) return;
 
     const map = L.map(mapRef.current).setView([40.7128, -74.006], 13);
 
@@ -34,7 +35,7 @@ export default function MapView() {
       attribution: '&copy; OpenStreetMap contributors',
     }).addTo(map);
 
-    complaints.forEach((c) => {
+    complaints.forEach((c: any) => {
       const color = statusColors[c.status] || "#6b7280";
       const icon = L.divIcon({
         className: "custom-marker",
@@ -68,8 +69,8 @@ export default function MapView() {
   }, [complaints]);
 
   useEffect(() => {
-    window.__navigateComplaint = (id) => navigate(`/complaints/${id}`);
-    return () => { delete window.__navigateComplaint; };
+    (window as any).__navigateComplaint = (id: string) => navigate(`/complaints/${id}`);
+    return () => { delete (window as any).__navigateComplaint; };
   }, [navigate]);
 
   return (
