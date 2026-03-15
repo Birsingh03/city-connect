@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { validationResult } from "express-validator";
 
 
+
 export const signup = async (req, res) => {
   try {
 

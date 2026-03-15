@@ -8,9 +8,12 @@ import "leaflet/dist/leaflet.css";
 // @ts-ignore
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
-  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
-  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+  iconRetinaUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
+  iconUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
 });
 
 const statusColors: Record<string, string> = {
@@ -29,10 +32,19 @@ export default function MapView() {
   useEffect(() => {
     if (mapInstanceRef.current || !mapRef.current) return;
 
-    const map = L.map(mapRef.current).setView([40.7128, -74.006], 13);
+    const map = L.map(mapRef.current).setView([31.1471, 75.3412], 7);
+
+    const punjabBounds = L.latLngBounds(
+      [29.5, 73.5], // southwest
+      [32.7, 76.9], // northeast
+    );
+
+    map.setMaxBounds(punjabBounds);
+    map.options.maxBoundsViscosity = 1.0;
+    map.setMinZoom(7);
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: '&copy; OpenStreetMap contributors',
+      attribution: "&copy; OpenStreetMap contributors",
     }).addTo(map);
 
     complaints.forEach((c: any) => {
@@ -44,7 +56,9 @@ export default function MapView() {
         iconAnchor: [14, 14],
       });
 
-      const marker = L.marker([c.location.lat, c.location.lng], { icon }).addTo(map);
+      const marker = L.marker([c.location.lat, c.location.lng], { icon }).addTo(
+        map,
+      );
 
       const popupContent = `
         <div style="min-width:200px;">
@@ -69,8 +83,11 @@ export default function MapView() {
   }, [complaints]);
 
   useEffect(() => {
-    (window as any).__navigateComplaint = (id: string) => navigate(`/complaints/${id}`);
-    return () => { delete (window as any).__navigateComplaint; };
+    (window as any).__navigateComplaint = (id: string) =>
+      navigate(`/complaints/${id}`);
+    return () => {
+      delete (window as any).__navigateComplaint;
+    };
   }, [navigate]);
 
   return (
@@ -79,8 +96,14 @@ export default function MapView() {
         <h1 className="text-lg font-bold text-foreground">Map View</h1>
         <div className="flex gap-3 mt-2 flex-wrap">
           {Object.entries(statusColors).map(([status, color]) => (
-            <div key={status} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <div style={{ background: color }} className="h-3 w-3 rounded-full" />
+            <div
+              key={status}
+              className="flex items-center gap-1.5 text-xs text-muted-foreground"
+            >
+              <div
+                style={{ background: color }}
+                className="h-3 w-3 rounded-full"
+              />
               {status}
             </div>
           ))}
