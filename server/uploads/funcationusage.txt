@@ -1,0 +1,10 @@
+import { uploadToCloudinary } from "../utils/cloudinaryUpload.js";
+
+if (req.file) {
+
+  const uploadResult = await uploadToCloudinary(req.file.path);
+
+  const imageUrl = uploadResult.secure_url;
+  const publicId = uploadResult.public_id;
+
+}

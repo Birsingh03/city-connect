@@ -11,12 +11,21 @@ export default function LocationPicker({ value, onChange }) {
     if (mapInstanceRef.current) return;
 
     const map = L.map(mapRef.current).setView(
-      [value?.lat || 40.7128, value?.lng || -74.006],
-      13
+      [value?.lat || 31.1471, value?.lng || 75.3412],
+      7,
     );
 
+    const punjabBounds = L.latLngBounds(
+      [29.5, 73.5], // southwest
+      [32.7, 76.9], // northeast
+    );
+
+    map.setMaxBounds(punjabBounds);
+    map.options.maxBoundsViscosity = 1.0;
+    map.setMinZoom(7);
+
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: '&copy; OpenStreetMap contributors',
+      attribution: "&copy; OpenStreetMap contributors",
     }).addTo(map);
 
     if (value?.lat && value?.lng) {
@@ -30,7 +39,11 @@ export default function LocationPicker({ value, onChange }) {
       } else {
         markerRef.current = L.marker([lat, lng]).addTo(map);
       }
-      onChange({ lat: lat.toFixed(6), lng: lng.toFixed(6), address: `${lat.toFixed(4)}, ${lng.toFixed(4)}` });
+      onChange({
+        lat: lat.toFixed(6),
+        lng: lng.toFixed(6),
+        address: `${lat.toFixed(4)}, ${lng.toFixed(4)}`,
+      });
     });
 
     mapInstanceRef.current = map;
@@ -43,7 +56,10 @@ export default function LocationPicker({ value, onChange }) {
 
   return (
     <div>
-      <div ref={mapRef} className="h-64 w-full rounded-lg border border-border z-0" />
+      <div
+        ref={mapRef}
+        className="h-64 w-full rounded-lg border border-border z-0"
+      />
       {value?.lat && (
         <p className="text-xs text-muted-foreground mt-2">
           📍 {value.address || `${value.lat}, ${value.lng}`}
