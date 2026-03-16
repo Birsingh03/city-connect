@@ -15,6 +15,7 @@ import MyComplaints from "@/pages/MyComplaints";
 import AdminDashboard from "@/pages/AdminDashboard";
 import Login from "@/pages/Login";
 import NotFound from "@/pages/NotFound";
+import Signup from "./pages/Signup";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ const App = () => (
                 <Route path="/my-complaints" element={<MyComplaints />} />
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
                 <Route path="*" element={<NotFound />} />
               </Route>
             </Routes>

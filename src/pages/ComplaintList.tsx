@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import axios from 'axios'
 import { useComplaints } from "@/contexts/ComplaintContext";
 import ComplaintCard from "@/components/ComplaintCard";
 import ComplaintFilters from "@/components/ComplaintFilters";
@@ -8,6 +9,19 @@ export default function ComplaintList() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
   const [category, setCategory] = useState("");
+
+  //  useEffect(() => {
+  //   const fetchComplaints = async () => {
+  //     try {
+  //       const res = await axios.get("/api/complaints");
+  //       setComplaints(res.data);
+  //     } catch (err) {
+  //       console.error("Error fetching complaints:", err);
+  //     }
+  //   };
+
+  //   fetchComplaints();
+  // }, []);
 
   const filtered = useMemo(() => {
     return complaints.filter((c) => {
