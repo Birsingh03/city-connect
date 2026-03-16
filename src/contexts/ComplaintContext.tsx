@@ -1,17 +1,24 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import mockComplaints from "@/data/mockComplaints";
+import axios from 'axios'
 
 const ComplaintContext = createContext(null);
 
 export function ComplaintProvider({ children }) {
-  const [complaints, setComplaints] = useState(() => {
-    const saved = localStorage.getItem("civicComplaints");
-    return saved ? JSON.parse(saved) : mockComplaints;
-  });
+   const [complaints, setComplaints] = useState([]);
 
   useEffect(() => {
-    localStorage.setItem("civicComplaints", JSON.stringify(complaints));
-  }, [complaints]);
+    const fetchComplaints = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/complaints");
+        setComplaints(res.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchComplaints();
+  }, []);
 
   const addComplaint = (complaint) => {
     const newComplaint = {

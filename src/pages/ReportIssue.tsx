@@ -11,6 +11,8 @@ import LocationPicker from "@/components/LocationPicker";
 import { categories } from "@/data/mockComplaints";
 import { toast } from "sonner";
 
+import axios from "axios"
+
 export default function ReportIssue() {
   const { addComplaint } = useComplaints();
   const { user } = useAuth();
@@ -24,7 +26,9 @@ export default function ReportIssue() {
     location: null,
   });
 
-  const handleSubmit = (e) => {
+
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user) {
       toast.error("Please login to report an issue");
@@ -38,6 +42,19 @@ export default function ReportIssue() {
     addComplaint({ ...form, reportedBy: user.username });
     toast.success("Complaint submitted successfully!");
     navigate("/my-complaints");
+
+
+  // changes made in this branch
+    try {
+      const response = await axios.post(
+        "https://api.example.com/users",
+        form
+      );
+
+      console.log("Success:", response.data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   return (

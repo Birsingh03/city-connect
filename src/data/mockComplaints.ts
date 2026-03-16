@@ -1,6 +1,6 @@
 const mockComplaints = [
-  {
-    id: "1",
+ {
+    id: "1", 
     title: "Large Pothole on Main Street",
     description: "A dangerous pothole approximately 2 feet wide has formed near the intersection of Main St and Oak Ave. Multiple cars have been damaged.",
     category: "Potholes",
