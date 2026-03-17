@@ -7,6 +7,7 @@ configDotenv({ path: './.env' });
 
 async function main() {
   await connectDB();
+
   const server = http.createServer(createServerApplication());
   const PORT = Number(process.env.PORT) || 3000;
   server.listen(PORT, () => {
