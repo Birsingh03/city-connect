@@ -11,7 +11,13 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "axios": "^1.13.6",
+    "cors": "^2.8.6",
     "dotenv": "^17.3.1",
-    "express": "^5.2.1"
+    "exifr": "^7.1.3",
+    "express": "^5.2.1",
+    "form-data": "^4.0.5",
+    "jimp": "^1.6.0",
+    "multer": "^2.1.1"
   }
 }

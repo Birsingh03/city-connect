@@ -22,7 +22,7 @@ export default function Navbar() {
         <div className="flex h-16 items-center justify-between">
           <Link to="/" className="flex items-center gap-2 font-bold text-lg text-foreground">
             <Shield className="h-6 w-6 text-primary" />
-            <span>CivicReport</span>
+            <span>Civic Connect</span>
           </Link>
 
           {/* Desktop nav */}
