@@ -26,8 +26,6 @@ export default function ReportIssue() {
     location: null,
   });
 
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user) {
@@ -108,7 +106,7 @@ export default function ReportIssue() {
               <LocationPicker value={form.location} onChange={(loc) => setForm({ ...form, location: loc })} />
             </div>
 
-            <Button type="submit" className="w-full" size="lg">
+            <Button type="submit" className="w-full" size="lg" onClick={ReportIssue}>
               Submit Report
             </Button>
           </form>

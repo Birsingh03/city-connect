@@ -8,10 +8,10 @@ import { toast } from "sonner";
 
 export default function Signup() {
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const { login } = useAuth(); // after signup we log them in
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
@@ -22,19 +22,21 @@ export default function Signup() {
       return;
     }
 
+    if (!email.trim()) {
+      toast.error("Please enter an email");
+      return;
+    }
+
     if (!password) {
       toast.error("Please enter a password");
       return;
     }
 
-    if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
-      return;
-    }
 
-    // Example: Save user to localStorage
+
     const newUser = {
       username: username.trim(),
+      email: email.trim(),
       password: password
     };
 
@@ -42,7 +44,6 @@ export default function Signup() {
 
     toast.success("Account created successfully!");
 
-    // automatically log in
     login(username.trim(), false);
 
     navigate("/");
@@ -71,6 +72,16 @@ export default function Signup() {
             </div>
 
             <div className="space-y-2">
+              <label className="text-sm font-medium">Email</label>
+              <Input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+
+            <div className="space-y-2">
               <label className="text-sm font-medium">Password</label>
               <Input
                 type="password"
@@ -80,15 +91,6 @@ export default function Signup() {
               />
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Confirm Password</label>
-              <Input
-                type="password"
-                placeholder="Confirm password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-            </div>
 
             <Button type="submit" className="w-full">
               Sign Up
