@@ -10,7 +10,6 @@ import ImageUpload from "@/components/ImageUpload";
 import LocationPicker from "@/components/LocationPicker";
 import { categories } from "@/data/mockComplaints";
 import { toast } from "sonner";
-
 import axios from "axios"
 
 export default function ReportIssue() {

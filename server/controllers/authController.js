@@ -14,7 +14,7 @@ export const signup = async (req, res) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { username, email, password } = req.body;
+    const { username, email, password , role} = req.body;
 
     const existingUser = await User.findOne({ email });
 
@@ -29,6 +29,7 @@ export const signup = async (req, res) => {
       username,
       email,
       password: hashedPassword,
+      role
     });
 
     const token = jwt.sign(
@@ -59,7 +60,7 @@ export const login = async (req, res) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { email, password } = req.body;
+    const { email, password , role } = req.body;
 
     const user = await User.findOne({ email });
 

@@ -10,6 +10,7 @@ export default function Signup() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  // const [role , setRole] = useState("");
 
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ export default function Signup() {
     const newUser = {
       username: username.trim(),
       email: email.trim(),
-      password: password
+      password: password,
     };
 
     localStorage.setItem("civicUser", JSON.stringify(newUser));
