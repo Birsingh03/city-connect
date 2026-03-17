@@ -23,11 +23,15 @@ const statusDotColors = {
 };
 
 export default function StatusTimeline({ history }) {
+  const defaultHistory = history || [
+    { status: "Submitted", date: new Date().toISOString(), note: "Complaint submitted" }
+  ];
+  
   return (
     <div className="relative space-y-0">
-      {history.map((entry, i) => {
+      {defaultHistory.map((entry, i) => {
         const Icon = statusIcons[entry.status] || Clock;
-        const isLast = i === history.length - 1;
+        const isLast = i === defaultHistory.length - 1;
         return (
           <div key={i} className="flex gap-4">
             <div className="flex flex-col items-center">
@@ -43,7 +47,7 @@ export default function StatusTimeline({ history }) {
             <div className={`pb-6 ${isLast ? "" : ""}`}>
               <p className="font-semibold text-sm text-foreground">{entry.status}</p>
               <p className="text-xs text-muted-foreground">
-                {format(new Date(entry.date), "MMM d, yyyy 'at' h:mm a")}
+                {entry.date ? format(new Date(entry.date), "MMM d, yyyy 'at' h:mm a") : "N/A"}
               </p>
               {entry.note && <p className="text-sm text-muted-foreground mt-1">{entry.note}</p>}
             </div>

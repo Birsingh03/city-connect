@@ -11,7 +11,7 @@ export default function MyComplaints() {
 
   if (!user) return <Navigate to="/login" />;
 
-  const myComplaints = getUserComplaints(user.username);
+  const myComplaints = getUserComplaints(user._id || user.username);
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8">

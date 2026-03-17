@@ -13,7 +13,25 @@ export function ComplaintProvider({ children }) {
     try {
       setLoading(true);
       const res = await axios.get(`${API_URL}/complaints`);
-      setComplaints(res.data);
+      const mapped = res.data.map((c) => ({
+        ...c,
+        id: c._id,
+        image: c.imageUrl,
+        category: c.category || "Uncategorized",
+        location: {
+          lat: c.location?.lat,
+          lng: c.location?.lng,
+          address: c.location?.lat ? `${c.location.lat}, ${c.location.lng}` : "Location not available"
+        },
+        dateReported: c.createdAt,
+        reportedBy: c.reportedBy,
+        reportedByUsername: c.reportedBy?.username || c.reportedBy,
+        statusHistory: c.statusHistory || [
+          { status: "Submitted", date: c.createdAt, note: "Complaint submitted" },
+          ...(c.status && c.status !== "Submitted" ? [{ status: c.status, date: c.updatedAt, note: `Status updated to ${c.status}` }] : [])
+        ]
+      }));
+      setComplaints(mapped);
     } catch (error) {
       console.error("Error fetching complaints:", error);
     } finally {
@@ -31,6 +49,7 @@ export function ComplaintProvider({ children }) {
       dateReported: new Date().toISOString(),
       lastUpdated: new Date().toISOString(),
       status: "Pending",
+      reportedByUsername: complaint.reportedBy,
     };
     setComplaints((prev) => [newComplaint, ...prev]);
     return newComplaint;
@@ -64,9 +83,46 @@ export function ComplaintProvider({ children }) {
     }
   };
 
-  const getComplaint = (id) => complaints.find((c) => c._id === id || c.id === id);
+  const getComplaint = async (id) => {
+    const local = complaints.find((c) => c._id === id || c.id === id);
+    if (local) return local;
+    
+    try {
+      const res = await axios.get(`${API_URL}/complaints/${id}`);
+      const complaint = res.data;
+      const statusHistory = complaint.statusHistory || [
+        { status: "Submitted", date: complaint.createdAt, note: "Complaint submitted" },
+        ...(complaint.status && complaint.status !== "Submitted" ? [{ status: complaint.status, date: complaint.updatedAt, note: `Status updated to ${complaint.status}` }] : [])
+      ];
+      return {
+        ...complaint,
+        id: complaint._id,
+        image: complaint.imageUrl,
+        location: {
+          lat: complaint.location?.lat,
+          lng: complaint.location?.lng,
+          address: complaint.location?.lat ? `${complaint.location.lat}, ${complaint.location.lng}` : "Location not available"
+        },
+        dateReported: complaint.createdAt,
+        reportedBy: complaint.reportedBy,
+        reportedByUsername: complaint.reportedBy?.username || complaint.reportedBy,
+        statusHistory
+      };
+    } catch (error) {
+      console.error("Error fetching complaint:", error);
+      return null;
+    }
+  };
 
-  const getUserComplaints = (userId) => complaints.filter((c) => c.reportedBy?._id === userId || c.reportedBy === userId);
+  const getUserComplaints = useCallback((userId) => {
+    return complaints.filter((c) => 
+      c.reportedBy?._id === userId || 
+      c.reportedBy === userId ||
+      c.reportedByUsername === userId ||
+      String(c.reportedBy?._id) === userId ||
+      String(c.reportedBy) === userId
+    );
+  }, [complaints]);
 
   const getStats = () => ({
     total: complaints.length,

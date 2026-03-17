@@ -22,9 +22,7 @@ export default function Navbar() {
         <div className="flex h-16 items-center justify-between">
           <Link to="/" className="flex items-center gap-2 font-bold text-lg text-foreground">
             <Shield className="h-6 w-6 text-primary" />
-            <span>
-              CivicConnect
-            </span>
+            <span>Civic Connect</span>
           </Link>
 
           {/* Desktop nav */}
@@ -81,15 +79,9 @@ export default function Navbar() {
                 </Button>
               </>
             ) : (
-              <div>
-                <Link to="/login">
-                  <Button size="sm" className="mr-1">Login</Button>
-                </Link>
-                <Link to="/signup">
-                  <Button size="sm">Signup</Button>
-                </Link>
-              </div>
-
+              <Link to="/login">
+                <Button size="sm">Login</Button>
+              </Link>
             )}
           </div>
 

@@ -53,8 +53,8 @@ export default function ComplaintList() {
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.map((c) => (
-            <ComplaintCard key={c.id} complaint={c} />
+          {filtered.map((c, index) => (
+            <ComplaintCard key={c.id ?? `complaint-${index}`} complaint={c} />
           ))}
         </div>
       )}
