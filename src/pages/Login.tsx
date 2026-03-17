@@ -8,17 +8,16 @@ import { toast } from "sonner";
 
 export default function Login() {
 
-  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [isAdminLogin, setIsAdminLogin] = useState(false);
   const [adminPass, setAdminPass] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!email.trim()) {
@@ -26,32 +25,32 @@ export default function Login() {
       return;
     }
 
-    if (!username.trim()) {
-      toast.error("Please enter a username");
+    if (!password) {
+      toast.error("Please enter your password");
       return;
     }
 
     if (isAdminLogin) {
-
       if (adminPass !== "admin123") {
         toast.error("Invalid admin password");
         return;
       }
-
-      login(username.trim(), true);
+      const adminUser = { username: "admin", role: "admin", isAdmin: true };
+      localStorage.setItem("civicUser", JSON.stringify(adminUser));
       toast.success("Logged in as admin");
       navigate("/admin");
+      return;
+    }
 
-    } else {
+    setLoading(true);
+    const result = await login(email.trim(), password);
+    setLoading(false);
 
-      if (!password) {
-        toast.error("Please enter your password");
-        return;
-      }
-
-      login(username.trim(), false);
-      toast.success(`Welcome, ${username.trim()}!`);
+    if (result.success) {
+      toast.success(`Welcome, ${result.user.username}!`);
       navigate("/");
+    } else {
+      toast.error(result.message || "Login failed");
     }
   };
 
@@ -71,7 +70,6 @@ export default function Login() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
 
-            {/* Email */}
             <div className="space-y-2">
               <label className="text-sm font-medium">Email</label>
               <Input
@@ -82,30 +80,16 @@ export default function Login() {
               />
             </div>
 
-            {/* Username */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">Username</label>
+              <label className="text-sm font-medium">Password</label>
               <Input
-                placeholder="Enter your username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
 
-            {/* User Password */}
-            {!isAdminLogin && (
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Password</label>
-                <Input
-                  type="password"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-            )}
-
-            {/* Admin Password */}
             {isAdminLogin && (
               <div className="space-y-2">
                 <label className="text-sm font-medium">Admin Password</label>
@@ -121,8 +105,8 @@ export default function Login() {
               </div>
             )}
 
-            <Button type="submit" className="w-full">
-              {isAdminLogin ? "Login as Admin" : "Login as User"}
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Logging in..." : isAdminLogin ? "Login as Admin" : "Login as User"}
             </Button>
 
             <button

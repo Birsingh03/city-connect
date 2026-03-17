@@ -1,5 +1,5 @@
 import express from "express";
-import { signup, login } from "../controllers/authController.js";
+import { signup, login, logout } from "../controllers/authController.js";
 import { body } from "express-validator";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 
@@ -8,7 +8,6 @@ const router = express.Router();
 
 router.post(
   "/signup",
-  authMiddleware,
   [
     body("username")
       .notEmpty()
@@ -32,7 +31,6 @@ router.post(
 
 router.post(
   "/login",
-   authMiddleware,
   [
     body("email")
       .isEmail()

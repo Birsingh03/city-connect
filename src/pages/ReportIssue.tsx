@@ -10,12 +10,16 @@ import ImageUpload from "@/components/ImageUpload";
 import LocationPicker from "@/components/LocationPicker";
 import { categories } from "@/data/mockComplaints";
 import { toast } from "sonner";
-import axios from "axios"
+import axios from "axios";
+
+const API_URL = "http://localhost:3001/api";
 
 export default function ReportIssue() {
   const { addComplaint } = useComplaints();
-  const { user } = useAuth();
+  const { user, getToken } = useAuth();
   const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
     title: "",
@@ -27,30 +31,51 @@ export default function ReportIssue() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     if (!user) {
       toast.error("Please login to report an issue");
       navigate("/login");
       return;
     }
+    
     if (!form.title || !form.description || !form.location) {
       toast.error("Please fill in all required fields and select a location");
       return;
     }
-    addComplaint({ ...form, reportedBy: user.username });
-    toast.success("Complaint submitted successfully!");
-    navigate("/my-complaints");
 
+    setLoading(true);
 
-  // changes made in this branch
     try {
-      const response = await axios.post(
-        "https://api.example.com/users",
-        form
-      );
+      const token = getToken();
+      const formData = new FormData();
+      formData.append("title", form.title);
+      formData.append("category", form.category.toLowerCase());
+      formData.append("description", form.description);
+      formData.append("location", JSON.stringify(form.location));
+      
+      if (form.image) {
+        const response = await fetch(form.image);
+        const blob = await response.blob();
+        formData.append("image", blob, "image.jpg");
+      }
 
-      console.log("Success:", response.data);
+      const res = await axios.post(`${API_URL}/report`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+      });
+
+      if (res.data.success) {
+        addComplaint({ ...form, reportedBy: user.username, id: res.data.data._id });
+        toast.success("Complaint submitted successfully!");
+        navigate("/my-complaints");
+      }
     } catch (error) {
       console.error("Error:", error);
+      toast.error(error.response?.data?.message || "Failed to submit complaint");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -105,8 +130,8 @@ export default function ReportIssue() {
               <LocationPicker value={form.location} onChange={(loc) => setForm({ ...form, location: loc })} />
             </div>
 
-            <Button type="submit" className="w-full" size="lg" onClick={ReportIssue}>
-              Submit Report
+            <Button type="submit" className="w-full" size="lg" disabled={loading}>
+              {loading ? "Submitting..." : "Submit Report"}
             </Button>
           </form>
         </CardContent>

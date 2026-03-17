@@ -10,12 +10,12 @@ export default function Signup() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  // const [role , setRole] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const { login } = useAuth();
+  const { signup } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!username.trim()) {
@@ -33,21 +33,21 @@ export default function Signup() {
       return;
     }
 
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
 
+    setLoading(true);
+    const result = await signup(username.trim(), email.trim(), password);
+    setLoading(false);
 
-    const newUser = {
-      username: username.trim(),
-      email: email.trim(),
-      password: password,
-    };
-
-    localStorage.setItem("civicUser", JSON.stringify(newUser));
-
-    toast.success("Account created successfully!");
-
-    login(username.trim(), false);
-
-    navigate("/");
+    if (result.success) {
+      toast.success("Account created successfully!");
+      navigate("/");
+    } else {
+      toast.error(result.message || "Signup failed");
+    }
   };
 
   return (
@@ -93,8 +93,8 @@ export default function Signup() {
             </div>
 
 
-            <Button type="submit" className="w-full">
-              Sign Up
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Creating account..." : "Sign Up"}
             </Button>
 
             <button

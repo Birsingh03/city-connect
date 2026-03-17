@@ -1,5 +1,5 @@
 import Report from "../models/Report.js";
-import uploadOnCloudinary from "../uploads/cloudinaryUpload.js";
+import { uploadOnCloudinary } from "../uploads/cloudinaryUpload.js";
 import fs from "fs";
 
 export const submitReport = async (req, res) => {
@@ -35,12 +35,12 @@ export const submitReport = async (req, res) => {
 
     if (req.file) {
 
-      const result = await uploadOnCloudinary.uploader.upload(req.file.path, {
-        folder: "issue_reports"
-      });
+      const result = await uploadOnCloudinary(req.file.path);
 
-      imageUrl = result.secure_url;
-      imageId = result.public_id;
+      if (result) {
+        imageUrl = result.secure_url;
+        imageId = result.public_id;
+      }
 
       fs.unlinkSync(req.file.path); // delete local file
     }

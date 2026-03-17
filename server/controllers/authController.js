@@ -41,6 +41,12 @@ export const signup = async (req, res) => {
     res.status(201).json({
       message: "User created successfully",
       token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role
+      }
     });
 
   } catch (error) {
@@ -83,6 +89,12 @@ export const login = async (req, res) => {
     res.status(200).json({
       message: "Login successful",
       token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role
+      }
     });
 
   } catch (error) {

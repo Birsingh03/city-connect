@@ -32,6 +32,12 @@ const reportSchema = new mongoose.Schema(
       lng: Number
     },
 
+    status: {
+      type: String,
+      enum: ["Pending", "In Progress", "Resolved", "Under Review"],
+      default: "Pending"
+    },
+
     reportedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
