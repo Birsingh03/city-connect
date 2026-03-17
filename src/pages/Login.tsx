@@ -5,9 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import axios from 'axios'
 
 export default function Login() {
-
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,7 +18,7 @@ export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!email.trim()) {
@@ -31,35 +31,41 @@ export default function Login() {
       return;
     }
 
-    if (isAdminLogin) {
+    try {
+      if (isAdminLogin) {
+        const res = await axios.post("http://localhost:5000/api/admin/login", {
+          email,
+          username,
+          password: adminPass,
+        });
 
-      if (adminPass !== "admin123") {
-        toast.error("Invalid admin password");
-        return;
+        login(username.trim(), true);
+        toast.success("Logged in as admin");
+        navigate("/admin");
+      } else {
+        if (!password) {
+          toast.error("Please enter your password");
+          return;
+        }
+
+        const res = await axios.post("http://localhost:5000/api/login", {
+          email,
+          username,
+          password,
+        });
+
+        login(username.trim(), false);
+        toast.success(`Welcome, ${username.trim()}!`);
+        navigate("/");
       }
-
-      login(username.trim(), true);
-      toast.success("Logged in as admin");
-      navigate("/admin");
-
-    } else {
-
-      if (!password) {
-        toast.error("Please enter your password");
-        return;
-      }
-
-      login(username.trim(), false);
-      toast.success(`Welcome, ${username.trim()}!`);
-      navigate("/");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Login failed");
     }
   };
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-10rem)] px-4">
-
       <Card className="w-full max-w-md">
-
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Sign In</CardTitle>
           <p className="text-sm text-muted-foreground">
@@ -68,9 +74,7 @@ export default function Login() {
         </CardHeader>
 
         <CardContent>
-
           <form onSubmit={handleSubmit} className="space-y-4">
-
             {/* Email */}
             <div className="space-y-2">
               <label className="text-sm font-medium">Email</label>
@@ -132,13 +136,9 @@ export default function Login() {
             >
               {isAdminLogin ? "← Back to user login" : "Login as Admin →"}
             </button>
-
           </form>
-
         </CardContent>
-
       </Card>
-
     </div>
   );
 }

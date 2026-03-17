@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import axios from 'axios'
 
 export default function Signup() {
   const [username, setUsername] = useState("");
@@ -14,7 +15,7 @@ export default function Signup() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!username.trim()) {
@@ -32,21 +33,22 @@ export default function Signup() {
       return;
     }
 
+    try {
+      const response = await axios.post("http://localhost:5000/api/signup", {
+        username: username.trim(),
+        email: email.trim(),
+        password: password,
+      });
 
+      toast.success("Account created successfully!");
 
-    const newUser = {
-      username: username.trim(),
-      email: email.trim(),
-      password: password
-    };
+      // login after signup
+      login(username.trim(), false);
 
-    localStorage.setItem("civicUser", JSON.stringify(newUser));
-
-    toast.success("Account created successfully!");
-
-    login(username.trim(), false);
-
-    navigate("/");
+      navigate("/");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Signup failed");
+    }
   };
 
   return (
@@ -61,7 +63,6 @@ export default function Signup() {
 
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-
             <div className="space-y-2">
               <label className="text-sm font-medium">Username</label>
               <Input
@@ -91,7 +92,6 @@ export default function Signup() {
               />
             </div>
 
-
             <Button type="submit" className="w-full">
               Sign Up
             </Button>
@@ -103,7 +103,6 @@ export default function Signup() {
             >
               Already have an account? Login →
             </button>
-
           </form>
         </CardContent>
       </Card>
