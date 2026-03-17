@@ -11,7 +11,6 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isAdminLogin, setIsAdminLogin] = useState(false);
-  const [adminPass, setAdminPass] = useState("");
   const [loading, setLoading] = useState(false);
 
   const { login } = useAuth();
@@ -31,14 +30,16 @@ export default function Login() {
     }
 
     if (isAdminLogin) {
-      if (adminPass !== "admin123") {
-        toast.error("Invalid admin password");
-        return;
+      setLoading(true);
+      const result = await login(email.trim(), password);
+      setLoading(false);
+
+      if (result.success && (result.user.role === "admin" || result.user.isAdmin)) {
+        toast.success(`Welcome, ${result.user.username}!`);
+        navigate("/admin");
+      } else {
+        toast.error(result.message || "Invalid admin credentials");
       }
-      const adminUser = { username: "admin", role: "admin", isAdmin: true };
-      localStorage.setItem("civicUser", JSON.stringify(adminUser));
-      toast.success("Logged in as admin");
-      navigate("/admin");
       return;
     }
 
@@ -91,18 +92,9 @@ export default function Login() {
             </div>
 
             {isAdminLogin && (
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Admin Password</label>
-                <Input
-                  type="password"
-                  placeholder="Enter admin password"
-                  value={adminPass}
-                  onChange={(e) => setAdminPass(e.target.value)}
-                />
-                <p className="text-xs text-muted-foreground">
-                  Demo password: admin123
-                </p>
-              </div>
+              <p className="text-xs text-muted-foreground">
+                Use admin credentials to login
+              </p>
             )}
 
             <Button type="submit" className="w-full" disabled={loading}>

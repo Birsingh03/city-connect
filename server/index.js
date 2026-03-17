@@ -1,23 +1,18 @@
 import http from "node:http";
-import dotenv from "dotenv";
 import { createServerApplication } from "./app/app.js";
-import reportsRoute from "./routes/reports.js";
+import { connectDB } from "./db/index.js";
+import { configDotenv } from "dotenv";
 
-dotenv.config();
+configDotenv({ path: './.env' });
 
 async function main() {
-  try {
-    const app = createServerApplication();
-    app.use('/api/reports', reportsRoute);
+  await connectDB();
 
-    const server = http.createServer(app);
-    const PORT = Number(process.env.PORT) || 3000;
-    server.listen(PORT, () => {
-      console.log(`Server is running on PORT http://localhost:${PORT}`);
-    });
-  } catch (error) {
-    console.error(error);
-  }
+  const server = http.createServer(createServerApplication());
+  const PORT = Number(process.env.PORT) || 3001;
+  server.listen(PORT, () => {
+    console.log(`Server is running on PORT http://localhost:${PORT}`);
+  });
 }
 
 main();

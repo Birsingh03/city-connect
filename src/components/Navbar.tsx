@@ -79,9 +79,14 @@ export default function Navbar() {
                 </Button>
               </>
             ) : (
-              <Link to="/login">
-                <Button size="sm">Login</Button>
-              </Link>
+              <>
+                <Link to="/login">
+                  <Button size="sm" variant="ghost">Login</Button>
+                </Link>
+                <Link to="/signup">
+                  <Button size="sm">Sign Up</Button>
+                </Link>
+              </>
             )}
           </div>
 

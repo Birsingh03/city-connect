@@ -86,7 +86,7 @@ export default function AdminDashboard() {
                 )}
                 <div className="min-w-0">
                   <p className="font-medium text-sm text-foreground truncate">{c.title}</p>
-                  <p className="text-xs text-muted-foreground">{c.category} · {format(new Date(c.dateReported), "MMM d, yyyy")}</p>
+                  <p className="text-xs text-muted-foreground">{c.category} · {c.dateReported ? format(new Date(c.dateReported), "MMM d, yyyy") : "N/A"}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 shrink-0">
@@ -100,8 +100,8 @@ export default function AdminDashboard() {
                 <div className="grid lg:grid-cols-2 gap-6">
                   <div className="space-y-3">
                     <p className="text-sm text-foreground">{c.description}</p>
-                    <p className="text-xs text-muted-foreground">📍 {c.location.address}</p>
-                    <p className="text-xs text-muted-foreground">Reported by: {c.reportedBy}</p>
+                    <p className="text-xs text-muted-foreground">📍 {c.location?.address || "Location not available"}</p>
+                    <p className="text-xs text-muted-foreground">Reported by: {c.reportedBy?.username || c.reportedBy || "Unknown"}</p>
                     {c.image && (
                       <img src={c.image} alt={c.title} className="rounded-lg h-40 w-full object-cover" />
                     )}

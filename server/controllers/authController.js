@@ -42,10 +42,12 @@ export const signup = async (req, res) => {
       message: "User created successfully",
       token,
       user: {
+        _id: user._id,
         id: user._id,
         username: user.username,
         email: user.email,
-        role: user.role
+        role: user.role,
+        isAdmin: user.isAdmin
       }
     });
 
@@ -86,14 +88,18 @@ export const login = async (req, res) => {
       { expiresIn: "7d" }
     );
 
+    const isUserAdmin = user.role === "admin" || user.isAdmin;
+    
     res.status(200).json({
       message: "Login successful",
       token,
       user: {
+        _id: user._id,
         id: user._id,
         username: user.username,
         email: user.email,
-        role: user.role
+        role: user.role,
+        isAdmin: isUserAdmin
       }
     });
 
