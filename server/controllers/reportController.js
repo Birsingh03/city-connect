@@ -34,15 +34,24 @@ export const submitReport = async (req, res) => {
     let imageId = null;
 
     if (req.file) {
-
+      console.log("Uploading file:", req.file.path, req.file.mimetype);
       const result = await uploadOnCloudinary(req.file.path);
 
       if (result) {
         imageUrl = result.secure_url;
         imageId = result.public_id;
+        console.log("Image uploaded successfully:", imageUrl);
+      } else {
+        console.error("Cloudinary upload failed - no result returned");
       }
 
-      fs.unlinkSync(req.file.path); // delete local file
+      try {
+        fs.unlinkSync(req.file.path);
+      } catch (e) {
+        console.error("Error deleting temp file:", e.message);
+      }
+    } else {
+      console.log("No file in request. Files:", req.files, "File:", req.file);
     }
 
     const parsedLocation = JSON.parse(location);

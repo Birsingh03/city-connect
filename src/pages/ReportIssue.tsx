@@ -54,14 +54,15 @@ export default function ReportIssue() {
       formData.append("location", JSON.stringify(form.location));
       
       if (form.image) {
-        const response = await fetch(form.image);
-        const blob = await response.blob();
-        formData.append("image", blob, "image.jpg");
+        const base64Response = await fetch(form.image);
+        const blob = await base64Response.blob();
+        const fileName = `complaint-${Date.now()}.jpg`;
+        const file = new File([blob], fileName, { type: blob.type || "image/jpeg" });
+        formData.append("image", file);
       }
 
       const res = await axios.post(`${API_URL}/report`, formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
           Authorization: token ? `Bearer ${token}` : "",
         },
       });
